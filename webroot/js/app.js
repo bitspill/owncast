@@ -5,6 +5,7 @@ const html = htm.bind(h);
 import { OwncastPlayer } from './components/player.js';
 import SocialIconsList from './components/social-icons-list.js';
 import UsernameForm from './components/chat/username.js';
+import VideoPoster from './components/video-poster.js';
 import Chat from './components/chat/chat.js';
 import Websocket from './utils/websocket.js';
 import { secondsToHMMSS, hasTouchScreen, getOrientation } from './utils/helpers.js';
@@ -194,7 +195,7 @@ export default class App extends Component {
     if (status.online) {
       // only do this if video is paused, so no unnecessary img fetches
       if (this.player.vjsPlayer && this.player.vjsPlayer.paused()) {
-        this.player.setPoster();
+        // this.player.setPoster();
       }
     }
     this.setState({
@@ -211,7 +212,9 @@ export default class App extends Component {
   }
 
   handlePlayerPlaying() {
-    // do something?
+    this.setState({
+      isPlaying: true,
+    });
   }
 
   // likely called some time after stream status has gone offline.
@@ -219,6 +222,7 @@ export default class App extends Component {
   handlePlayerEnded() {
     this.setState({
       playerActive: false,
+      isPlaying: false,
     });
   }
 
@@ -320,6 +324,7 @@ export default class App extends Component {
       chatInputEnabled,
       configData,
       displayChat,
+      isPlaying,
       orientation,
       playerActive,
       streamOnline,
@@ -365,6 +370,7 @@ export default class App extends Component {
 
     const mainClass = playerActive ? 'online' : '';
     const streamInfoClass = streamOnline ? 'online' : ''; // need?
+    const poster = streamOnline ? '/thumbnail.jpg' : '/img/logo.png';
 
     const isPortrait = this.hasTouchScreen && orientation === ORIENTATION_PORTRAIT;
     const shortHeight = windowHeight <= HEIGHT_SHORT_WIDE && !isPortrait;
@@ -435,6 +441,7 @@ export default class App extends Component {
               controls
               playsinline
             ></video>
+            <${VideoPoster} src=${poster} active=${!isPlaying} />
           </div>
 
           <section
